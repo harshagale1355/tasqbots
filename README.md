@@ -32,7 +32,7 @@ A powerful Multi-Document Retrieval-Augmented Generation (RAG) Chatbot built wit
 ### Prerequisites
 
 - Python 3.10+
-- OpenAI or Groq API keys (configured via `.env`)
+- Groq API keys (configured via `.env`)
 
 ### Local Installation
 
@@ -56,7 +56,6 @@ A powerful Multi-Document Retrieval-Augmented Generation (RAG) Chatbot built wit
 4. **Set up environment variables:**
    Create a `.env` file in the root directory and add your necessary API keys:
    ```env
-   OPENAI_API_KEY=your_openai_api_key
    GROQ_API_KEY=your_groq_api_key
    ```
 
