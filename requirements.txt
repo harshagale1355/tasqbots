@@ -1,0 +1,13 @@
+openai
+groq
+python-dotenv
+langchain
+langchain-community
+chromadb
+sentence-transformers
+PyPDF2
+pypdf
+transformers
+langchain-classic
+langchain-huggingface
+langchain-groq
