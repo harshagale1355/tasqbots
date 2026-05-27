@@ -1,6 +1,6 @@
 from Chatbot.components.agents.llm.llm import llm_agent
+from Chatbot.logging.logger import logging
 
-# Initialize LLM once
 llm = llm_agent()
 
 
@@ -10,12 +10,19 @@ def response_agent(state):
 
     docs = state["retrieved_docs"]
 
-    # Combine retrieved chunks
+    chat_history = state.get("chat_history", [])
+
+    # Retrieved context
     context = "\n\n".join([
         doc.page_content for doc in docs
     ])
 
-    # Create citations
+    # Conversation history
+    history_text = "\n".join([
+        f"{msg['role']}: {msg['content']}"
+        for msg in chat_history
+    ])
+
     citations = [
         {
             "source": doc.metadata.get("source", "Unknown"),
@@ -24,29 +31,49 @@ def response_agent(state):
         for doc in docs
     ]
 
-    # Prompt
     prompt = f"""
     You are a helpful AI assistant.
 
-    Answer ONLY using the provided context.
+    Use the conversation history and retrieved context
+    to answer the question.
 
-    If the answer is not found in the context,
-    say:
-    "I could not find the answer in the document."
+    Conversation History:
+    {history_text}
 
     Context:
     {context}
 
-    Question:
+    Current Question:
     {query}
 
-    Provide a concise answer with citations.
+    Answer ONLY from the provided context.
+
+    If answer is not found,
+    say:
+    "I could not find the answer in the document."
     """
 
-    # Call LLM
     response = llm.invoke(prompt)
 
+    answer = response.content
+
+    # Update memory
+    updated_history = chat_history + [
+        {
+            "role": "user",
+            "content": query
+        },
+        {
+            "role": "assistant",
+            "content": answer
+        }
+    ]
+
+    logging.info(f"Generated response for query: '{query[:50]}...' with {len(docs)} documents as context.")
+
     return {
-        "answer": response.content,
-        "citations": citations
+        "answer": answer,
+        "citations": citations,
+        "chat_history": updated_history,
+        "retry_count": state.get("retry_count", 0) + 1
     }
