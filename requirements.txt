@@ -11,3 +11,5 @@ transformers
 langchain-classic
 langchain-huggingface
 langchain-groq
+faiss-gpu
+numpy<2.0.0
